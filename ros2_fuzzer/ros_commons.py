@@ -1,7 +1,7 @@
 import hypothesis.strategies as st
 import numpy as np
 import hypothesis.extra.numpy as npst
-from ros_generic_fuzzer.ros_basic_strategies import array, string, time, duration
+from ros_basic_strategies import array, string, time, duration
 try:
     import rclpy
     from rclpy.node import Node
@@ -16,6 +16,7 @@ try:
     from stereo_msgs.msg import *
     from trajectory_msgs.msg import *
     from visualization_msgs.msg import *
+    from builtin_interfaces.msg import *
 except ImportError:
     print("Please install ROS 2 first")
 
@@ -28,11 +29,13 @@ class Fuzzer(Node):
         self.pub = self.create_publisher(msg_type, topic)
 
     def publish(self, msg):
-        self.publish(msg)
+        self.pub.publish(msg)
 
+    '''
     def destroy_node(self):
         self.destroy_node()
         rclpy.shutdown()
+    '''
 
 
 def map_ros_types(type_name):
@@ -77,6 +80,7 @@ def map_ros_types(type_name):
 @st.composite
 def dynamic_strategy_generator_ros(draw, type_name, strategy_dict):  # This generates existing ROS msgs objects
     aux_obj = type_name()
+    print(strategy_dict)
     for key, value in strategy_dict.items():
         setattr(aux_obj, key, draw(value))
     return aux_obj

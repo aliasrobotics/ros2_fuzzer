@@ -1,10 +1,16 @@
-from ros2_generic_fuzzer.ros_commons import Fuzzer, map_ros_types
+from ros_commons import Fuzzer, map_ros_types
 from hypothesis import given, settings, Verbosity
 import logging
 from argparse import ArgumentParser
 
+# TODO delete or modify imports!!
+from std_msgs.msg import *
+from geometry_msgs.msg import *
+from builtin_interfaces.msg import *
+import rclpy
 
 def test_main_wrapper(msg_type, topic):
+    rclpy.init()
     fuzzer = Fuzzer(topic, msg_type)
 
     @settings(verbosity=Verbosity.verbose)
@@ -12,7 +18,9 @@ def test_main_wrapper(msg_type, topic):
     def test_main(msg):
         fuzzer.publish(msg)
 
+    test_main()
     fuzzer.destroy_node()
+    rclpy.shutdown()
 
 
 def main():
@@ -28,13 +36,13 @@ def main():
     if (args.message is None or args.topic is None) and args.length is None:
         parser.print_help()
     else:
-        try:
+        #try:
             #if check_msg_type(ros_msg_list(), args.message):
-            test_main_wrapper(eval(args.message), args.topic)
+        test_main_wrapper(eval(args.message), args.topic)
             #else:
                 #logger.warning('Invalid ROS 2 data type')
-        except Exception as e:
-            logger.critical('Exception occurred during execution --> ' + str(e))
+        #except Exception as e:
+            #logger.critical('Exception occurred during execution --> ' + str(e))
 
 
 if __name__ == '__main__':
