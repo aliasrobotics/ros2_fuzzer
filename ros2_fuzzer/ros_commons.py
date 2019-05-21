@@ -19,6 +19,9 @@ try:
     from trajectory_msgs.msg import *
     from visualization_msgs.msg import *
     from builtin_interfaces.msg import *
+    from lifecycle_msgs.msg import *
+    from action_msgs.msg import *
+    from unique_identifier_msgs.msg import *
 except ImportError:
     print("Please install ROS 2 first")
 
@@ -44,7 +47,7 @@ def map_ros_types(type_name):
     slot_dict = type_name.get_fields_and_field_types()
     for s_name, s_type in slot_dict.items():
         try:
-            # TODO Add time, duration, regex ^sequence\<(?P<type>(?P<complex>(?P<package>\w+)\/)(?P<basic>\w+))\>$
+            # TODO Add time, duration, regex ^sequence\<(?P<type>(?P<complex>(?P<package>\w+)\/)(?P<basic>\w+))\>$, simple array with size
             if 'sequence' in s_type:
                 type_regexp = re.search('\<([\w\/\_]+)\>', s_type)
                 aux = type_regexp.group(1)
@@ -79,6 +82,9 @@ def dynamic_strategy_generator_ros(draw, type_name, strategy_dict):  # This gene
     aux_obj = type_name()
     for key, value in strategy_dict.items():
         x = draw(value)
+        print(type(x))
+        if isinstance(x, list):
+            print(x)
         # if it is numpy type, convert to python basic type
         if hasattr(x, 'dtype'):
             x = x.item()

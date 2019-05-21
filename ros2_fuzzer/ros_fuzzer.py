@@ -19,20 +19,21 @@ try:
     from trajectory_msgs.msg import *
     from visualization_msgs.msg import *
     from builtin_interfaces.msg import *
+    from lifecycle_msgs.msg import *
+    from action_msgs.msg import *
+    from unique_identifier_msgs.msg import *
 except ImportError:
     print("Please install ROS 2 first")
 
+
 def test_main_wrapper(msg_type, topic):
     fuzzer = Fuzzer(topic, msg_type)
-
-    @settings(verbosity=Verbosity.verbose)
+    @settings(max_examples=100)
     @given(msg=map_ros_types(msg_type))
     def test_main(msg):
         fuzzer.publish(msg)
-
     test_main()
     fuzzer.destroy_node()
-    rclpy.shutdown()
 
 
 def main():
