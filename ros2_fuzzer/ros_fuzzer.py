@@ -4,13 +4,25 @@ import logging
 from argparse import ArgumentParser
 
 # TODO delete or modify imports!!
-from std_msgs.msg import *
-from geometry_msgs.msg import *
-from builtin_interfaces.msg import *
-import rclpy
+try:
+    import rclpy
+    from rclpy.node import Node
+
+    from rosgraph_msgs.msg import *
+    from geometry_msgs.msg import *
+    from std_msgs.msg import *
+    from sensor_msgs.msg import *
+    from diagnostic_msgs.msg import *
+    from nav_msgs.msg import *
+    from shape_msgs.msg import *
+    from stereo_msgs.msg import *
+    from trajectory_msgs.msg import *
+    from visualization_msgs.msg import *
+    from builtin_interfaces.msg import *
+except ImportError:
+    print("Please install ROS 2 first")
 
 def test_main_wrapper(msg_type, topic):
-    rclpy.init()
     fuzzer = Fuzzer(topic, msg_type)
 
     @settings(verbosity=Verbosity.verbose)
