@@ -1,7 +1,7 @@
 import logging
 from argparse import ArgumentParser
 from hypothesis import given, settings, Verbosity
-from ros_commons import Fuzzer, ros_msg_loader_str, map_ros_types
+from .ros_commons import Fuzzer, ros_msg_loader_str, map_ros_types
 
 
 def test_main_wrapper(msg_type, topic):

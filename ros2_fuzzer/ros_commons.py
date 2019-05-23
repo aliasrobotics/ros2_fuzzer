@@ -5,7 +5,7 @@ import hypothesis.extra.numpy as npst
 import hypothesis.strategies as st
 import rclpy
 from rclpy.node import Node
-from ros_basic_strategies import array, string, time, duration
+from .ros_basic_strategies import array, string
 
 
 class Fuzzer(Node):
