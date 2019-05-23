@@ -1,7 +1,7 @@
 import logging
 from argparse import ArgumentParser
 from hypothesis import given, settings, Verbosity
-from .ros_commons import Fuzzer, ros_msg_loader_str, map_ros_types
+from ros_commons import Fuzzer, ros_msg_loader_str, map_ros_types
 
 
 def test_main_wrapper(msg_type, topic):
@@ -24,11 +24,11 @@ def main():
     parser.add_argument('-m', '--message', help='Message type to be fuzzed.', required=True)
     parser.add_argument('-t', '--topic', help='Topic name to be fuzzed.', required=True)
     args = parser.parse_args()
-    try:
-        msg_type = ros_msg_loader_str(args.message)
-        test_main_wrapper(msg_type, args.topic)
-    except Exception as e:
-        logger.critical('Exception occurred during execution --> ' + str(e))
+    #try:
+    msg_type = ros_msg_loader_str(args.message)
+    test_main_wrapper(msg_type, args.topic)
+    #except Exception as e:
+    #logger.critical('Exception occurred during execution --> ' + str(e))
 
 
 if __name__ == '__main__':

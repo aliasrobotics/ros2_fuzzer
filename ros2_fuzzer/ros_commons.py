@@ -5,7 +5,7 @@ import hypothesis.extra.numpy as npst
 import hypothesis.strategies as st
 import rclpy
 from rclpy.node import Node
-from .ros_basic_strategies import array, string
+from ros_basic_strategies import array, string
 
 
 class Fuzzer(Node):
@@ -145,9 +145,12 @@ def dynamic_strategy_generator_ros(draw, type_name, strategy_dict):  # This gene
     aux_obj = type_name()
     for key, value in strategy_dict.items():
         x = draw(value)
-        # TODO adapt for numpy.array, e.g.:for 'uint8[16]'
-        # if it is numpy type, convert to python basic type
-        if hasattr(x, 'dtype'):
+        # TODO convert list that has numpy types inside (NOT a numpy array), e.g.:for 'uint8[16], to basic type list'
+        # if it is numpy type, get python basic type
+        if isinstance(x, list) and hasattr(x[0], 'dtype'):
+            x = np.array(x)
+            x = x.tolist()
+        elif hasattr(x, 'dtype'):
             x = x.item()
         setattr(aux_obj, key, x)
     return aux_obj
