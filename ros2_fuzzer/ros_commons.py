@@ -34,7 +34,7 @@ def ros_type_to_dict(msg_type):
              ROS2 message module, its type, if it is an array and if so, its size.
     """
     type_regexp = re.compile(
-        r'^(?P<complex>(?P<module>[\w]+)/)?(?P<type>[\w]+)(?P<array>\[(?P<array_size>[0-9]*)?\])?$')
+        r'^(?P<complex>(?P<module>[\w]+)/)?(?P<type>[\w]+)(?P<array>\[(?P<array_size>[0-9]*)?\])?(?P<complex2>\<(?P<sequence>[\w\/\_]+)\>)?$')
     type_match = type_regexp.match(msg_type)
     if type_match:
         return type_match.groupdict()
@@ -94,10 +94,6 @@ def map_ros_types(ros_class):
                     parse_basic_arrays(s_name, type_dict, strategy_dict)
                 elif type_dict['type'] is 'string':
                     strategy_dict[s_name] = st.text()
-                elif type_dict['type'] is 'time':
-                    strategy_dict[s_name] = time()
-                elif type_dict['type'] is 'duration':
-                    strategy_dict[s_name] = duration()
                 else:  # numpy compatible ROS built-in types
                     strategy_dict[s_name] = npst.from_dtype(np.dtype(type_dict['type']))
             else:
