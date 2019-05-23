@@ -24,11 +24,11 @@ def main():
     parser.add_argument('-m', '--message', help='Message type to be fuzzed.', required=True)
     parser.add_argument('-t', '--topic', help='Topic name to be fuzzed.', required=True)
     args = parser.parse_args()
-    #try:
-    msg_type = ros_msg_loader_str(args.message)
-    test_main_wrapper(msg_type, args.topic)
-    #except Exception as e:
-    #logger.critical('Exception occurred during execution --> ' + str(e))
+    try:
+        msg_type = ros_msg_loader_str(args.message)
+        test_main_wrapper(msg_type, args.topic)
+    except Exception as e:
+        logger.critical('Exception occurred during execution --> ' + str(e))
 
 
 if __name__ == '__main__':
