@@ -40,7 +40,7 @@ class TestRosLogMessages(unittest.TestCase):
         self.pub.publish(parameter_event)
 
     @given(parameter_event=map_ros_types(ParameterEvent), node_name=text(min_size=10, max_size=20))
-    def test_fuzz_log_message_arbitrary(self, parameter_event, node_name):
+    def test_fuzz_parameter_event_message_arbitrary(self, parameter_event, node_name):
         parameter_event.node = node_name
         self.pub.publish(parameter_event)
 
