@@ -5,7 +5,7 @@ import hypothesis.extra.numpy as npst
 import hypothesis.strategies as st
 import rclpy
 from rclpy.node import Node
-from ros_basic_strategies import array, string
+from ros2_fuzzer.ros_basic_strategies import array, string
 
 
 class Fuzzer(Node):
@@ -144,13 +144,12 @@ def parse_complex_types(s_name, type_dict, strategy_dict):
 def dynamic_strategy_generator_ros(draw, type_name, strategy_dict):  # This generates existing ROS msgs objects
     aux_obj = type_name()
     for key, value in strategy_dict.items():
-        x = draw(value)
-        # TODO convert list that has numpy types inside (NOT a numpy array), e.g.:for 'uint8[16], to basic type list'
-        # if it is numpy type, get python basic type
-        if isinstance(x, list) and hasattr(x[0], 'dtype'):
-            x = np.array(x)
-            x = x.tolist()
-        elif hasattr(x, 'dtype'):
-            x = x.item()
-        setattr(aux_obj, key, x)
+        value = draw(value)
+        # If it is array of numpy, get array python basic type
+        if isinstance(value, list) and hasattr(value[0], 'dtype'):
+            value = np.array(value)
+            value = value.tolist()
+        elif hasattr(value, 'dtype'):
+            value = value.item()
+        setattr(aux_obj, key, value)
     return aux_obj
