@@ -12,9 +12,9 @@ from hypothesis.strategies import text
 from rcl_interfaces.msg import ParameterEvent
 from builtin_interfaces.msg import Time
 
-from ros2_fuzzer.process_handling import FuzzedLocalProcessHandler
-from ros2_fuzzer.ros_basic_strategies import array
-from ros2_fuzzer.ros_commons import map_ros_types
+from process_handling import FuzzedLocalProcessHandler
+from ros_basic_strategies import array
+from ros_commons import map_ros_types
 
 
 class TestRosLogMessages(unittest.TestCase):

@@ -5,7 +5,7 @@ import hypothesis.extra.numpy as npst
 import hypothesis.strategies as st
 import rclpy
 from rclpy.node import Node
-from ros2_fuzzer.ros_basic_strategies import array, string
+from ros_basic_strategies import array, string
 
 
 class Fuzzer(Node):
@@ -93,6 +93,11 @@ def map_ros_types(ros_class):
                     parse_basic_arrays(s_name, type_dict, strategy_dict)
                 elif type_dict['type'] == 'string':
                     strategy_dict[s_name] = st.text()
+                elif type_dict['type'] == 'boolean':
+                    strategy_dict[s_name] = st.booleans()
+                # TODO correct data type?
+                elif type_dict['type'] == 'octet':
+                    strategy_dict[s_name] = st.binary(min_size=1, max_size=1)
                 else:  # numpy compatible ROS built-in types
                     strategy_dict[s_name] = npst.from_dtype(np.dtype(type_dict['type']))
             else:
@@ -115,6 +120,12 @@ def parse_basic_arrays(s_name, type_dict, strategy_dict):
         array_size = None
     if type_dict['type'] == 'string':
         strategy_dict[s_name] = array(elements=string(), min_size=array_size, max_size=array_size)
+    elif type_dict['type'] == 'boolean':
+        strategy_dict[s_name] = array(elements=npst.from_dtype(np.dtype('bool')), min_size=array_size,
+                                      max_size=array_size)
+    # TODO correct data type?
+    elif type_dict['type'] == 'octet':
+        strategy_dict[s_name] = array(elements=st.binary(min_size=1, max_size=1), min_size=array_size, max_size=array_size)
     else:
         strategy_dict[s_name] = array(elements=npst.from_dtype(np.dtype(type_dict['type'])), min_size=array_size,
                                       max_size=array_size)
@@ -146,7 +157,7 @@ def dynamic_strategy_generator_ros(draw, type_name, strategy_dict):  # This gene
     for key, value in strategy_dict.items():
         value = draw(value)
         # If it is array of numpy, get array python basic type
-        if isinstance(value, list) and hasattr(value[0], 'dtype'):
+        if isinstance(value, list) and value and hasattr(value[0], 'dtype'):
             value = np.array(value)
             value = value.tolist()
         elif hasattr(value, 'dtype'):
