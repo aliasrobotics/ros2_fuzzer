@@ -55,7 +55,7 @@ def ros_msg_loader(type_dict):
         return module.__dict__[type_dict['type']]
     except KeyError:
         raise KeyError('ROS2 message type: {} not included in message module: {}'.format(type_dict['type'],
-                                                                                    type_dict['module']))
+                                                                                         type_dict['module']))
     except ImportError:
         raise ImportError('ROS2 message module: {} does not exist.'.format(type_dict['module']))
     except TypeError:
@@ -95,7 +95,6 @@ def map_ros_types(ros_class):
                     strategy_dict[s_name] = st.text()
                 elif type_dict['type'] == 'boolean':
                     strategy_dict[s_name] = st.booleans()
-                # TODO correct data type?
                 elif type_dict['type'] == 'octet':
                     strategy_dict[s_name] = st.binary(min_size=1, max_size=1)
                 else:  # numpy compatible ROS built-in types
@@ -125,7 +124,8 @@ def parse_basic_arrays(s_name, type_dict, strategy_dict):
                                       max_size=array_size)
     # TODO correct data type?
     elif type_dict['type'] == 'octet':
-        strategy_dict[s_name] = array(elements=st.binary(min_size=1, max_size=1), min_size=array_size, max_size=array_size)
+        strategy_dict[s_name] = array(elements=st.binary(min_size=1, max_size=1), min_size=array_size,
+                                      max_size=array_size)
     else:
         strategy_dict[s_name] = array(elements=npst.from_dtype(np.dtype(type_dict['type'])), min_size=array_size,
                                       max_size=array_size)
@@ -149,6 +149,7 @@ def parse_complex_types(s_name, type_dict, strategy_dict):
                                           max_size=int(type_dict['array_size']))
         else:
             strategy_dict[s_name] = array(elements=map_ros_types(ros_msg_loader(type_dict)))
+
 
 # A better approach. It returns an instance of a ROS2 msg directly, so no need for mapping! :)
 @st.composite
