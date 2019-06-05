@@ -1,15 +1,25 @@
 import logging
 from argparse import ArgumentParser
-from hypothesis import given, settings, Verbosity
-from ros_commons import Fuzzer, ros_msg_loader_str, map_ros_types
+from hypothesis import given, settings, Verbosity, HealthCheck
+from ros_commons import MessageFuzzer, ServiceFuzzer, ros_msg_loader_str, map_ros_types
 
 
 def test_main_wrapper(msg_type, topic):
-    fuzzer = Fuzzer(topic, msg_type)
+    fuzzer = MessageFuzzer(topic, msg_type)
     @settings(max_examples=100, verbosity=Verbosity.verbose)
     @given(msg=map_ros_types(msg_type))
     def test_main(msg):
         fuzzer.publish(msg)
+    test_main()
+    fuzzer.destroy_node()
+
+
+def test_srv_fuzzing(srv_type, srv_type_request, srv_name):
+    fuzzer = ServiceFuzzer(srv_type, srv_name)
+    @settings(max_examples=100, verbosity=Verbosity.verbose, suppress_health_check=[HealthCheck.too_slow])
+    @given(srv_request=map_ros_types(srv_type_request))
+    def test_main(srv_request):
+        fuzzer.send_request(srv_request)
     test_main()
     fuzzer.destroy_node()
 
