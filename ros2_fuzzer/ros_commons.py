@@ -19,7 +19,7 @@ class MessageFuzzer(Node):
     def publish(self, msg):
         self.pub.publish(msg)
 
-    def destroy_node(self):
+    def destroy_publisher(self):
         self.pub.destroy()
         rclpy.shutdown()
 
@@ -38,8 +38,8 @@ class ServiceFuzzer(Node):
         future = self.client.call_async(srv_request)
         rclpy.spin_until_future_complete(self, future)
 
-    def destroy_node(self):
-        self.destroy_node()
+    def destroy_client(self):
+        self.client.destroy()
         rclpy.shutdown()
 
 
@@ -70,7 +70,10 @@ def ros_msg_loader(type_dict):
     :return: The ROS2 message class. If the provided type does not exist, raises an import error.
     """
     try:
-        module = importlib.import_module(type_dict['module'] + '.msg')
+        if 'interface_type' in type_dict:
+            module = importlib.import_module(type_dict['module'] + '.srv')
+        else:
+            module = importlib.import_module(type_dict['module'] + '.msg')
         return module.__dict__[type_dict['type']]
     except KeyError:
         raise KeyError('ROS2 message type: {} not included in message module: {}'.format(type_dict['type'],
@@ -81,15 +84,17 @@ def ros_msg_loader(type_dict):
         raise TypeError('ROS2 message type: {} does not exist'.format(type_dict['type']))
 
 
-def ros_msg_loader_str(msg_type):
+def ros_interface_loader_str(msg_type, interface_type):
     """
     Wrapper for the :func:`ros_msg_loader` to treat string type command line arguments.
 
-    :param msg_type: A string type ROS2 message type (e.g. "Log").
+    :param interface_type: A string type ROS2 message type (e.g. "Log").
     :return: The :func:`ros_msg_loader` function.
     """
     type_dict = ros_type_to_dict(msg_type)
     if type_dict:
+        if interface_type == 'service':
+            type_dict['interface_type'] = interface_type
         return ros_msg_loader(type_dict)
     else:
         raise ImportError('Unable to find defined ROS2 Message type: {}'.format(msg_type))
