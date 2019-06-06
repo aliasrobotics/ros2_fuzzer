@@ -4,29 +4,30 @@ from hypothesis import given, settings, Verbosity, HealthCheck
 from ros_commons import MessageFuzzer, ServiceFuzzer, ros_interface_loader_str, map_ros_types
 
 
-def test_main_wrapper(msg_type, topic):
+def fuzz_message_wrapper(msg_type, topic):
     fuzzer = MessageFuzzer(topic, msg_type)
     @settings(max_examples=100, verbosity=Verbosity.verbose)
     @given(msg=map_ros_types(msg_type))
-    def test_main(msg):
+    def fuzz_message(msg):
         fuzzer.publish(msg)
-    test_main()
-    fuzzer.destroy_publisher()
+    fuzz_message()
+    fuzzer.destroy_publisher_and_shutdown()
 
 
-def test_srv_fuzzing(srv_type, srv_type_request, srv_name):
+def fuzz_service_wrapper(srv_type, srv_type_request, srv_name):
     fuzzer = ServiceFuzzer(srv_type, srv_name)
     @settings(max_examples=100, verbosity=Verbosity.verbose, suppress_health_check=[HealthCheck.too_slow])
     @given(srv_request=map_ros_types(srv_type_request))
-    def test_main(srv_request):
+    def fuzz_service(srv_request):
         fuzzer.send_request(srv_request)
-    test_main()
-    fuzzer.destroy_client()
+    fuzz_service()
+    fuzzer.destroy_client_and_shutdown()
 
 
 def main():
     """
-    Main method. Takes two command line arguments, parses them and calls :func:`test_main_wrapper`
+    Main method. Takes the interface_type as command line arguments and launch :func:`fuzz_message_wrapper`
+    or :func:`fuzz_service_wrapper` as required
     """
     logging.basicConfig()
     logger = logging.getLogger(__name__)
@@ -52,10 +53,10 @@ The possible interface types are:
     try:
         if args.interface_type == 'message':
             msg_type = ros_interface_loader_str(args.message_type, args.interface_type)
-            test_main_wrapper(msg_type, args.topic)
+            fuzz_message_wrapper(msg_type, args.topic)
         elif args.interface_type == 'service':
             srv_type = ros_interface_loader_str(args.service_type, args.interface_type)
-            test_srv_fuzzing(srv_type, srv_type.Request, args.service_name)
+            fuzz_service_wrapper(srv_type, srv_type.Request, args.service_name)
     except Exception as e:
         logger.critical('Exception occurred during execution --> ' + str(e))
 
