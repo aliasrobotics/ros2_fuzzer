@@ -19,7 +19,7 @@ class MessageFuzzer(Node):
     def publish(self, msg):
         self.pub.publish(msg)
 
-    def destroy_publisher(self):
+    def destroy_publisher_and_shutdown(self):
         self.pub.destroy()
         rclpy.shutdown()
 
@@ -38,7 +38,7 @@ class ServiceFuzzer(Node):
         future = self.client.call_async(srv_request)
         rclpy.spin_until_future_complete(self, future)
 
-    def destroy_client(self):
+    def destroy_client_and_shutdown(self):
         self.client.destroy()
         rclpy.shutdown()
 
