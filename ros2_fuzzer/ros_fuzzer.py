@@ -1,7 +1,7 @@
 import logging
 from argparse import ArgumentParser
 from hypothesis import given, settings, Verbosity, HealthCheck
-from ros_commons import MessageFuzzer, ServiceFuzzer, ros_msg_loader_str, map_ros_types
+from ros_commons import MessageFuzzer, ServiceFuzzer, ros_interface_loader_str, map_ros_types
 
 
 def test_main_wrapper(msg_type, topic):
@@ -11,7 +11,7 @@ def test_main_wrapper(msg_type, topic):
     def test_main(msg):
         fuzzer.publish(msg)
     test_main()
-    fuzzer.destroy_node()
+    fuzzer.destroy_publisher()
 
 
 def test_srv_fuzzing(srv_type, srv_type_request, srv_name):
@@ -21,7 +21,7 @@ def test_srv_fuzzing(srv_type, srv_type_request, srv_name):
     def test_main(srv_request):
         fuzzer.send_request(srv_request)
     test_main()
-    fuzzer.destroy_node()
+    fuzzer.destroy_client()
 
 
 def main():
@@ -30,13 +30,32 @@ def main():
     """
     logging.basicConfig()
     logger = logging.getLogger(__name__)
-    parser = ArgumentParser(description='ROS2 subscriber fuzzer')
-    parser.add_argument('-m', '--message', help='Message type to be fuzzed.', required=True)
-    parser.add_argument('-t', '--topic', help='Topic name to be fuzzed.', required=True)
+    parser = ArgumentParser(description='ROS2 Fuzzer', usage='''[-h] <interface_type> [<args>]
+
+The possible interface types are:
+    message
+    service
+    ''')
+    subparsers = parser.add_subparsers(dest='interface_type')
+    subparsers.required = True
+
+    message_parser = subparsers.add_parser('message', help='Message command help')
+    message_parser.add_argument('message_type', help='Message type to be fuzzed')
+    message_parser.add_argument('topic', help='The topic to be fuzzed with the corresponding message_type')
+
+    service_parser = subparsers.add_parser('service', help='Service command help')
+    service_parser.add_argument('service_type', help='Service type to be fuzzed.')
+    service_parser.add_argument('service_name', help='Service name to be fuzzed.')
+
     args = parser.parse_args()
+
     try:
-        msg_type = ros_msg_loader_str(args.message)
-        test_main_wrapper(msg_type, args.topic)
+        if args.interface_type == 'message':
+            msg_type = ros_interface_loader_str(args.message_type, args.interface_type)
+            test_main_wrapper(msg_type, args.topic)
+        elif args.interface_type == 'service':
+            srv_type = ros_interface_loader_str(args.service_type, args.interface_type)
+            test_srv_fuzzing(srv_type, srv_type.Request, args.service_name)
     except Exception as e:
         logger.critical('Exception occurred during execution --> ' + str(e))
 
