@@ -70,10 +70,7 @@ def ros_msg_loader(type_dict):
     :return: The ROS2 message class. If the provided type does not exist, raises an import error.
     """
     try:
-        if 'interface_type' in type_dict:
-            module = importlib.import_module(type_dict['module'] + '.srv')
-        else:
-            module = importlib.import_module(type_dict['module'] + '.msg')
+        module = importlib.import_module(type_dict['module'] + '.msg')
         return module.__dict__[type_dict['type']]
     except KeyError:
         raise KeyError('ROS2 message type: {} not included in message module: {}'.format(type_dict['type'],
@@ -84,20 +81,42 @@ def ros_msg_loader(type_dict):
         raise TypeError('ROS2 message type: {} does not exist'.format(type_dict['type']))
 
 
-def ros_interface_loader_str(msg_type, interface_type):
+def ros_srv_loader(type_dict):
+    """
+    Dynamically import ROS2 service modules.
+
+    :param type_dict: A dictionary which values say if the ROS service type is complex (not basic), which is its parent
+                      ROS2 service module, its type, if it is an array and if so, its size.
+    :return: The ROS2 service class. If the provided type does not exist, raises an import error.
+    """
+    try:
+        module = importlib.import_module(type_dict['module'] + '.srv')
+        return module.__dict__[type_dict['type']]
+    except KeyError:
+        raise KeyError('ROS2 service type: {} not included in service module: {}'.format(type_dict['type'],
+                                                                                         type_dict['module']))
+    except ImportError:
+        raise ImportError('ROS2 service module: {} does not exist.'.format(type_dict['module']))
+    except TypeError:
+        raise TypeError('ROS2 service type: {} does not exist'.format(type_dict['type']))
+
+
+def ros_interface_loader_str(ros2_type, interface_type):
     """
     Wrapper for the :func:`ros_msg_loader` to treat string type command line arguments.
 
-    :param interface_type: A string type ROS2 message type (e.g. "Log").
-    :return: The :func:`ros_msg_loader` function.
+    :param interface_type: A string representing the interface type (message, service,...)
+    :param ros2_type: A string type ROS2 interface type (e.g. "rosgraph_msgs/Log").
+    :return: The :func:`ros_srv_loader` or :func:`ros_msg_loader` function.
     """
-    type_dict = ros_type_to_dict(msg_type)
+    type_dict = ros_type_to_dict(ros2_type)
     if type_dict:
         if interface_type == 'service':
-            type_dict['interface_type'] = interface_type
-        return ros_msg_loader(type_dict)
+            return ros_srv_loader(type_dict)
+        else:
+            return ros_msg_loader(type_dict)
     else:
-        raise ImportError('Unable to find defined ROS2 Message type: {}'.format(msg_type))
+        raise ImportError('Unable to find defined ROS2 Interface type: {}'.format(ros2_type))
 
 
 def map_ros_types(ros_class):
