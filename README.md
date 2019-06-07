@@ -1,6 +1,6 @@
-# ROS Message Fuzzer
+# ROS Interface Fuzzer
 
-This repository contains Alias Robotics's ROS message fuzzer.
+This repository contains Alias Robotics's ROS interface fuzzer.
 
 [![PyPI version](https://badge.fury.io/py/ros2_fuzzer.svg)](https://badge.fury.io/py/ros2_fuzzer)   
 [![Documentation Status](https://readthedocs.org/projects/ros2_fuzzer/badge/?version=latest)](https://ros2_fuzzer.readthedocs.io/en/latest/?badge=latest)   
