@@ -1,7 +1,7 @@
 import logging
 from argparse import ArgumentParser
 from hypothesis import given, settings, Verbosity, HealthCheck
-from ros_commons import MessageFuzzer, ServiceFuzzer, ros_interface_loader_str, map_ros_types
+from ros_commons import MessageFuzzer, ServiceFuzzer, ros_interface_loader_str, map_ros_types, ROS2NodeFuzzer
 
 
 def fuzz(interface_type, name, ros2_type):
@@ -19,13 +19,13 @@ def fuzz_message_wrapper(msg_type, topic_name):
     :param msg_type: The ROS2 message type
     :param topic_name: The name of the topic to be fuzzed
     """
-    fuzzer = MessageFuzzer(topic_name, msg_type)
     @settings(max_examples=100, verbosity=Verbosity.verbose)
     @given(msg=map_ros_types(msg_type))
     def fuzz_message(msg):
-        fuzzer.publish(msg)
-    fuzz_message()
-    fuzzer.destroy_publisher_and_shutdown()
+        fuzzer.publish(msg_type, msg, topic_name)
+
+    with ROS2NodeFuzzer() as fuzzer:
+        fuzz_message()
 
 
 def fuzz_service_wrapper(srv_type, srv_name):
@@ -34,13 +34,13 @@ def fuzz_service_wrapper(srv_type, srv_name):
     :param srv_type: The ROS2 service type
     :param srv_name: The name of the service to be fuzzed
     """
-    fuzzer = ServiceFuzzer(srv_type, srv_name)
     @settings(max_examples=100, verbosity=Verbosity.verbose, suppress_health_check=[HealthCheck.too_slow])
     @given(srv_request=map_ros_types(srv_type.Request))
     def fuzz_service(srv_request):
-        fuzzer.send_request(srv_request)
-    fuzz_service()
-    fuzzer.destroy_client_and_shutdown()
+        fuzzer.send_request(srv_type, srv_name, srv_request)
+
+    with ROS2NodeFuzzer as fuzzer:
+        fuzz_service()
 
 
 def main():
