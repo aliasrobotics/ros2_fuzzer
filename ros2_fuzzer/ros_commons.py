@@ -8,6 +8,41 @@ from rclpy.node import Node
 from ros_basic_strategies import array, string
 
 
+class ROS2NodeFuzzer(Node):
+    def __init__(self):
+        self.pub = None
+        self.client = None
+
+    def __enter__(self):
+        rclpy.init()
+        super().__init__('ROS2_Fuzzer')
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.pub:
+            self.pub.destroy()
+        if self.client:
+            self.client.destroy()
+        rclpy.shutdown()
+
+    def publish(self, msg_type, msg, topic):
+        if self.pub:
+            self.pub.publish(msg)
+        else:
+            self.pub = self.create_publisher(msg_type, topic)
+            self.publish(msg_type, msg, topic)
+
+    def send_request(self, srv_type, srv_name, srv_request):
+        if self.client:
+            while not self.client.wait_for_service(timeout_sec=1.0):
+                self.get_logger().info('service not available, waiting again...')
+            future = self.client.call_async(srv_request)
+            rclpy.spin_until_future_complete(self, future)
+        else:
+            self.client = self.create_client(srv_type, srv_name)
+            self.send_request(srv_type, srv_name, srv_request)
+
+
 class MessageFuzzer(Node):
     def __init__(self, topic, msg_type):
         rclpy.init()
