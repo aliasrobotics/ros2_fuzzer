@@ -45,8 +45,8 @@ def fuzz_service_wrapper(srv_type, srv_name):
 
 def main():
     """
-    Main method. Takes the ros2_interface, ros2_interface_type and name as command line arguments
-    and launches the function :func:`fuzz`
+    Main method. Takes the ros2_interface, ros2_interface_type and name of the topic or service to be fuzzed
+    as command line arguments and launches the function :func:`fuzz`
     """
     logging.basicConfig()
     logger = logging.getLogger(__name__)
