@@ -43,41 +43,6 @@ class ROS2NodeFuzzer(Node):
             self.send_request(srv_type, srv_name, srv_request)
 
 
-class MessageFuzzer(Node):
-    def __init__(self, topic, msg_type):
-        rclpy.init()
-        super().__init__('message_fuzzer')
-        self.topic = topic
-        self.msg_type = msg_type
-        self.pub = self.create_publisher(msg_type, topic)
-
-    def publish(self, msg):
-        self.pub.publish(msg)
-
-    def destroy_publisher_and_shutdown(self):
-        self.pub.destroy()
-        rclpy.shutdown()
-
-
-class ServiceFuzzer(Node):
-    def __init__(self, srv_type, srv_name):
-        rclpy.init()
-        super().__init__('service_fuzzer')
-        self.srv_type = srv_type
-        self.srv_name = srv_name
-        self.client = self.create_client(srv_type, srv_name)
-
-    def send_request(self, srv_request):
-        while not self.client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('service not available, waiting again...')
-        future = self.client.call_async(srv_request)
-        rclpy.spin_until_future_complete(self, future)
-
-    def destroy_client_and_shutdown(self):
-        self.client.destroy()
-        rclpy.shutdown()
-
-
 def ros_type_to_dict(msg_type):
     """
     Create a dictionary which values say if the ROS2 message type is complex (not basic), which is its parent
