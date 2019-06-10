@@ -96,6 +96,8 @@ def ros_type_to_dict(msg_type):
         return None
 
 
+# TODO possible duplicated functions ros_msg_loader and ros_srv_loader (srv loader called once,
+#  msg_loader called more than once)
 def ros_msg_loader(type_dict):
     """
     Dynamically import ROS2 message modules.
