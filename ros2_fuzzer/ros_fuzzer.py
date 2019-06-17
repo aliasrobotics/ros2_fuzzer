@@ -1,7 +1,12 @@
+"""
+ROS2 Fuzzer CLI interface main module.
+
+:authors: Alias Robotics S.L. Borja Erice, Odei Olalde, Xabi Perez, Gorka Olalde
+"""
 import logging
 from argparse import ArgumentParser
 from hypothesis import given, settings, Verbosity, HealthCheck
-from ros_commons import MessageFuzzer, ServiceFuzzer, ros_interface_loader_str, map_ros_types, ROS2NodeFuzzer
+from ros_commons import ros_interface_loader_str, map_ros_types, ROS2NodeFuzzer
 
 
 def fuzz(interface_type, name, ros2_type):
@@ -39,7 +44,7 @@ def fuzz_service_wrapper(srv_type, srv_name):
     def fuzz_service(srv_request):
         fuzzer.send_request(srv_type, srv_name, srv_request)
 
-    with ROS2NodeFuzzer as fuzzer:
+    with ROS2NodeFuzzer() as fuzzer:
         fuzz_service()
 
 
