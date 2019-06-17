@@ -2,8 +2,8 @@ Fuzzer usage
 ============
 
 
-The fuzzer works in a standalone manner, by calling it to fuzz a full message structure via CLI,
-or by designing custom tests that fuzz or exclude different fields of the messages.
+The fuzzer works in a standalone manner, by calling it to fuzz a full interface structure via CLI,
+or by designing custom tests that fuzz or exclude different fields of the interfaces.
 
 .. toctree::
    :maxdepth: 4
@@ -14,21 +14,37 @@ or by designing custom tests that fuzz or exclude different fields of the messag
 CLI Usage
 ---------
 
-The fuzzer can be directly invoked from the command line. Ensure that the ROS workspace is sourced before proceeding.
-Message types follow the ROS naming scheme.
+The fuzzer can be directly invoked from the command line. Ensure that the ROS2 workspace is sourced before proceeding.
+Interfaces types follow the ROS2 naming scheme.
+
+For ROS2 Message Fuzzing:
 
 .. code-block:: bash
 
-    $ source /opt/ros/melodic/setup.bash
-    $ ros_fuzzer -t <topic> -m <message_type>
+    $ source /opt/ros/dashing/setup.bash
+    $ ros_fuzzer message <ros2_message_type> <topic_name>
 
-
-Here is a usage example for performing a Log message fuzzing over the /rosout topic:
+For ROS2 Service Fuzzing:
 
 .. code-block:: bash
 
-    $ source /opt/ros/melodic/setup.bash
-    $ ros_fuzzer -t /rosout -m rosgraph_msgs/Log
+    $ source /opt/ros/dashing/setup.bash
+    $ ros_fuzzer service <ros2_service_type> <service_name>
+
+
+Here is an usage example for performing a Log message fuzzing over the /listener topic:
+
+.. code-block:: bash
+
+    $ source /opt/ros/dashing/setup.bash
+    $ ros_fuzzer.py message rcl_interfaces/Log /listener
+
+Here is an usage example for performing an AddTwoInts service fuzzing over the service 'add_two_ints':
+
+.. code-block:: bash
+
+    $ source /opt/ros/dashing/setup.bash
+    $ ros_fuzzer.py service example_interfaces/AddTwoInts add_two_ints
 
 
 Usage as Unit Testing counterpart
@@ -49,7 +65,7 @@ that is then modified before being sent.
         self.pub.publish(log)
 
 
-The :func:`ros1_fuzzer.ros_commons.map_ros_types` function provides a dynamic strategy for the defined ROS Message class,
+The :func:`ros2_fuzzer.ros_commons.map_ros_types` function provides a dynamic strategy for the defined ROS Message class,
 that correctly sets up each of the elements of the message with the corresponding data type fuzzers.
 Examples can be extended to even fuzz different message types or sub-elements independently.
 Built in hypothesis :mod:`hypothesis.strategies` can be used as well.
@@ -65,41 +81,13 @@ The :func:`hypothesis.given` decorator runs the decorated function with all the 
         self.pub.publish(log)
 
 
-The following examples show a trajectory message fuzzer utilized for fuzzing the ABB control
-node of the `ROS Industrial <https://github.com/ros-industrial>`_ project.
-Notice the settings block, which serves as a way to set the fuzz cases to launch, and the output of the fuzzer.
-The :class:`ros1_fuzzer.process_handling.FuzzedLocalProcessHandler` class serves to detect changes in the target node,
-detecting when this node has crashed.
-
-.. code-block:: python
-    :caption: Joint Trajectory message fuzzing used on REDROS-I ROSIN project for ABB node fuzzing.
-
-    @settings(max_examples=5000, verbosity=Verbosity.verbose)
-    @given(array(elements=float64(), min_size=6, max_size=6))
-    def test_fuzz_message_jointstate_effort(process_handler, fuzzed_fields):
-        joint_state_message.effort = fuzzed_fields
-        self.pub.publish(joint_state_message)
-        assert self.process_handler.check_if_alive() is True
-
-    @settings(max_examples=5000, verbosity=Verbosity.verbose)
-    @given(array(elements=float64(), min_size=6, max_size=6),
-           array(elements=float64(), min_size=6, max_size=6),
-           array(elements=float64(), min_size=6, max_size=6))
-    def test_fuzz_message_jointstate_all(process_handler, positions, velocities, efforts):
-        joint_state_message.position = positions
-        joint_state_message.velocity = velocities
-        joint_state_message.effort = efforts
-        self.pub.publish(joint_state_message)
-        assert self.process_handler.check_if_alive() is True
-
-
 Usage of node health checkers
 -----------------------------
 
 A health checker for detecting node process crashes has been implemented as well.
 This way, assertions on the node process status can be performed.
 The health checker is instantiated prior to starting the tests, passing the node name as an argument.
-Currently, a local process :class:`ros1_fuzzer.process_handling.FuzzedLocalProcessHandler`
+Currently, a local process :class:`ros2_fuzzer.process_handling.FuzzedLocalProcessHandler`
 health checker is supported.
 
 .. code-block:: python
@@ -110,7 +98,7 @@ health checker is supported.
 
 
 The health checker can then be part of assert clauses on tests,
-by calling the :func:`ros1_fuzzer.process_handling.FuzzedLocalProcessHandler.check_if_alive` function.
+by calling the :func:`ros2_fuzzer.process_handling.FuzzedLocalProcessHandler.check_if_alive` function.
 
 .. code-block:: python
     :caption: Example test case with node health checking.

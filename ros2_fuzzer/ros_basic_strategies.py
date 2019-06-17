@@ -1,3 +1,8 @@
+"""
+ROS Fuzzer basic datatype strategies module.
+
+:authors: Alias Robotics S.L. Borja Erice, Odei Olalde, Xabi Perez, Gorka Olalde
+"""
 import hypothesis.strategies as st
 from hypothesis.errors import InvalidArgument
 from collections import namedtuple
@@ -10,6 +15,16 @@ STRING_MAX_SIZE = 1000
 
 @st.defines_strategy
 def string(min_size=STRING_MIN_SIZE, max_size=STRING_MAX_SIZE):
+    """
+    Generate value for ROS1 builtin message type "string".
+
+    :param min_size: int
+        Minimal size to generate
+    :param max_size: int
+        Maximal size to generate
+    :return: :func:`hypothesis.strategies.binary()`
+        Strategy with preconfigured default values.
+    """
     if not STRING_MIN_SIZE <= min_size <= max_size <= STRING_MAX_SIZE:
         raise InvalidArgument
     # average_size parameter is deprecated
