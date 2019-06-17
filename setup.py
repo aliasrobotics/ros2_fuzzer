@@ -8,7 +8,7 @@ setup(
     license='GPLv2',
     author='Alias Robotics',
     author_email='contact@aliasrobotics.com',
-    description='A ROS2 subscriber fuzzing tool for ROS systems',
+    description='A ROS2 fuzzing tool for ROS2 systems',
     keywords=['network', 'fuzzing', 'ros', 'ros2'],
     entry_points={
         'console_scripts': ['ros2_fuzzer=ros2_fuzzer.ros_fuzzer:main'],
