@@ -7,7 +7,7 @@ This repository contains Alias Robotics's ROS interface fuzzer.
 
 
 This fuzzer aims to help developers and researchers to find bugs and vulnerabilities in ROS2 nodes by performing fuzz tests
-over topics that the target nodes process. This fuzz cases consist in pseudorandom data that is optimized to cover all
+over interfaces that the target nodes process. This fuzz cases consist in pseudorandom data that is optimized to cover all
 possible limit cases, in order to test the correct behaviour of the nodes against data that would otherwise not show 
 in normal testing cases or normal behaviour of the target robot.
 
