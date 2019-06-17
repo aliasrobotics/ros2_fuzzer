@@ -1,3 +1,8 @@
+"""
+ROS Fuzzer base module.
+
+:authors: Alias Robotics S.L. Borja Erice, Odei Olalde, Xabi Perez, Gorka Olalde
+"""
 import importlib
 import re
 import numpy as np
@@ -9,6 +14,10 @@ from ros_basic_strategies import array, string
 
 
 class ROS2NodeFuzzer(Node):
+    """
+    Class Helper to create ROS2 Nodes and execute common actions
+    Defined context manager to start and kill the node when finished with its execution
+    """
     def __init__(self):
         self.pub = None
         self.client = None

@@ -22,14 +22,14 @@ For ROS2 Message Fuzzing:
 .. code-block:: bash
 
     $ source /opt/ros/dashing/setup.bash
-    $ ros_fuzzer message <ros2_message_type> <topic_name>
+    $ ros2_fuzzer message <ros2_message_type> <topic_name>
 
 For ROS2 Service Fuzzing:
 
 .. code-block:: bash
 
     $ source /opt/ros/dashing/setup.bash
-    $ ros_fuzzer service <ros2_service_type> <service_name>
+    $ ros2_fuzzer service <ros2_service_type> <service_name>
 
 
 Here is an usage example for performing a Log message fuzzing over the /listener topic:
@@ -37,14 +37,14 @@ Here is an usage example for performing a Log message fuzzing over the /listener
 .. code-block:: bash
 
     $ source /opt/ros/dashing/setup.bash
-    $ ros_fuzzer.py message rcl_interfaces/Log /listener
+    $ ros2_fuzzer.py message rcl_interfaces/Log /listener
 
 Here is an usage example for performing an AddTwoInts service fuzzing over the service 'add_two_ints':
 
 .. code-block:: bash
 
     $ source /opt/ros/dashing/setup.bash
-    $ ros_fuzzer.py service example_interfaces/AddTwoInts add_two_ints
+    $ ros2_fuzzer.py service example_interfaces/AddTwoInts add_two_ints
 
 
 Usage as Unit Testing counterpart
