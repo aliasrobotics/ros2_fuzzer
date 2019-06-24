@@ -1,3 +1,8 @@
+"""
+ROS Fuzzer base module.
+
+:authors: Alias Robotics S.L. Borja Erice, Odei Olalde, Xabi Perez, Gorka Olalde
+"""
 import importlib
 import re
 import numpy as np
@@ -8,20 +13,43 @@ from rclpy.node import Node
 from ros_basic_strategies import array, string
 
 
-class Fuzzer(Node):
-    def __init__(self, topic, msg_type):
+class ROS2NodeFuzzer(Node):
+    """
+    Class Helper to create ROS2 Nodes and execute common actions
+    Defined context manager to start and kill the node when finished with its execution
+    """
+    def __init__(self):
+        self.pub = None
+        self.client = None
+
+    def __enter__(self):
         rclpy.init()
-        super().__init__('fuzzer')
-        self.topic = topic
-        self.msg_type = msg_type
-        self.pub = self.create_publisher(msg_type, topic)
+        super().__init__('ROS2_Fuzzer')
+        return self
 
-    def publish(self, msg):
-        self.pub.publish(msg)
-
-    def destroy_node(self):
-        self.pub.destroy()
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.pub:
+            self.pub.destroy()
+        if self.client:
+            self.client.destroy()
         rclpy.shutdown()
+
+    def publish(self, msg_type, msg, topic):
+        if self.pub:
+            self.pub.publish(msg)
+        else:
+            self.pub = self.create_publisher(msg_type, topic)
+            self.publish(msg_type, msg, topic)
+
+    def send_request(self, srv_type, srv_name, srv_request):
+        if self.client:
+            while not self.client.wait_for_service(timeout_sec=1.0):
+                self.get_logger().info('service not available, waiting again...')
+            future = self.client.call_async(srv_request)
+            rclpy.spin_until_future_complete(self, future)
+        else:
+            self.client = self.create_client(srv_type, srv_name)
+            self.send_request(srv_type, srv_name, srv_request)
 
 
 def ros_type_to_dict(msg_type):
@@ -42,6 +70,8 @@ def ros_type_to_dict(msg_type):
         return None
 
 
+# TODO possible duplicated functions ros_msg_loader and ros_srv_loader (srv loader called once,
+#  msg_loader called more than once)
 def ros_msg_loader(type_dict):
     """
     Dynamically import ROS2 message modules.
@@ -62,18 +92,42 @@ def ros_msg_loader(type_dict):
         raise TypeError('ROS2 message type: {} does not exist'.format(type_dict['type']))
 
 
-def ros_msg_loader_str(msg_type):
+def ros_srv_loader(type_dict):
+    """
+    Dynamically import ROS2 service modules.
+
+    :param type_dict: A dictionary which values say if the ROS service type is complex (not basic), which is its parent
+                      ROS2 service module, its type, if it is an array and if so, its size.
+    :return: The ROS2 service class. If the provided type does not exist, raises an import error.
+    """
+    try:
+        module = importlib.import_module(type_dict['module'] + '.srv')
+        return module.__dict__[type_dict['type']]
+    except KeyError:
+        raise KeyError('ROS2 service type: {} not included in service module: {}'.format(type_dict['type'],
+                                                                                         type_dict['module']))
+    except ImportError:
+        raise ImportError('ROS2 service module: {} does not exist.'.format(type_dict['module']))
+    except TypeError:
+        raise TypeError('ROS2 service type: {} does not exist'.format(type_dict['type']))
+
+
+def ros_interface_loader_str(ros2_type, interface_type):
     """
     Wrapper for the :func:`ros_msg_loader` to treat string type command line arguments.
 
-    :param msg_type: A string type ROS2 message type (e.g. "Log").
-    :return: The :func:`ros_msg_loader` function.
+    :param interface_type: A string representing the interface type (message, service,...)
+    :param ros2_type: A string type ROS2 interface type (e.g. "rosgraph_msgs/Log").
+    :return: The :func:`ros_srv_loader` or :func:`ros_msg_loader` function.
     """
-    type_dict = ros_type_to_dict(msg_type)
+    type_dict = ros_type_to_dict(ros2_type)
     if type_dict:
-        return ros_msg_loader(type_dict)
+        if interface_type == 'service':
+            return ros_srv_loader(type_dict)
+        else:
+            return ros_msg_loader(type_dict)
     else:
-        raise ImportError('Unable to find defined ROS2 Message type: {}'.format(msg_type))
+        raise ImportError('Unable to find defined ROS2 Interface type: {}'.format(ros2_type))
 
 
 def map_ros_types(ros_class):
