@@ -1,6 +1,6 @@
 # ROS Interface Fuzzer
 
-This repository contains Alias Robotics's ROS interface fuzzer.
+This repository contains Alias Robotics's ROS2 topic & service fuzzer.
 
 [![PyPI version](https://badge.fury.io/py/ros2_fuzzer.svg)](https://badge.fury.io/py/ros2_fuzzer)   
 [![Documentation Status](https://readthedocs.org/projects/ros2_fuzzer/badge/?version=latest)](https://ros2_fuzzer.readthedocs.io/en/latest/?badge=latest)   
@@ -13,8 +13,7 @@ in normal testing cases or normal behaviour of the target robot.
 
 The full documentation is available on [ReadTheDocs](https://ros2_fuzzer.readthedocs.com)
 
-This project has been funded by the [ROSIN Project](http://rosin-project.eu/) as part of the REDROS-II project.
-Contract agreement No.: 732287
+This project has been funded by the [ROSIN Project](http://rosin-project.eu/) as part of the REDROS2-I project.
 
 Based on the original idea and Hypothesis-ROS project by [Florian Krommer](https://github.com/fkromer/hypothesis-ros)
 
