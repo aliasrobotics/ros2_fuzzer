@@ -6,7 +6,7 @@ ROS2 Fuzzer CLI interface main module.
 import logging
 from argparse import ArgumentParser
 from hypothesis import given, settings, Verbosity, HealthCheck
-from ros_commons import ros_interface_loader_str, map_ros_types, ROS2NodeFuzzer
+from ros2_fuzzer.ros_commons import ros_interface_loader_str, map_ros_types, ROS2NodeFuzzer
 
 
 def fuzz(interface_type, name, ros2_type):

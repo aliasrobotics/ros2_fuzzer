@@ -10,7 +10,7 @@ import hypothesis.extra.numpy as npst
 import hypothesis.strategies as st
 import rclpy
 from rclpy.node import Node
-from ros_basic_strategies import array, string
+from ros2_fuzzer.ros_basic_strategies import array, string
 
 
 class ROS2NodeFuzzer(Node):
