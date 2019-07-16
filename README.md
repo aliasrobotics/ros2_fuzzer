@@ -15,6 +15,8 @@ The full documentation is available on [ReadTheDocs](https://ros2_fuzzer.readthe
 
 ROS2_fuzzer is an effort part of the RedROS2-I FTP funded by [ROSIN](http://rosin-project.eu/) (European Union’s Horizon 2020 research and innovation programme) with the grant agreement No 732287.
 
+<img src="http://rosin-project.eu/wp-content/uploads/2017/03/Logo_ROSIN_CMYK-Website.png"/>
+
 Based on the original idea and Hypothesis-ROS project by [Florian Krommer](https://github.com/fkromer/hypothesis-ros)
 
 
