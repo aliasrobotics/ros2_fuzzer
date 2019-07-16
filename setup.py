@@ -2,10 +2,10 @@ from setuptools import setup
 
 setup(
     name='ros2_fuzzer',
-    version='1.0',
+    version='1.0.0',
     packages=['ros2_fuzzer'],
     url='https://www.aliasrobotics.com',
-    license='GPLv2',
+    license='GPLv3',
     author='Alias Robotics',
     author_email='contact@aliasrobotics.com',
     description='A ROS2 fuzzing tool for ROS2 systems',
@@ -19,4 +19,5 @@ setup(
         'numpy==1.16.3',
     ],
     include_package_data=True,
+    python_requires='>=3'
 )

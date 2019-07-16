@@ -1,4 +1,4 @@
-# ROS Interface Fuzzer
+# ROS2 Topic & Service Fuzzer
 
 This repository contains Alias Robotics's ROS2 topic & service fuzzer.
 
@@ -13,7 +13,7 @@ in normal testing cases or normal behaviour of the target robot.
 
 The full documentation is available on [ReadTheDocs](https://ros2_fuzzer.readthedocs.com)
 
-This project has been funded by the [ROSIN Project](http://rosin-project.eu/) as part of the REDROS2-I project.
+ROS2_fuzzer is an effort part of the RedROS2-I FTP funded by [ROSIN](http://rosin-project.eu/) (European Union’s Horizon 2020 research and innovation programme) with the grant agreement No 732287.
 
 Based on the original idea and Hypothesis-ROS project by [Florian Krommer](https://github.com/fkromer/hypothesis-ros)
 
