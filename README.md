@@ -11,7 +11,7 @@ over interfaces that the target nodes process. This fuzz cases consist in pseudo
 possible limit cases, in order to test the correct behaviour of the nodes against data that would otherwise not show 
 in normal testing cases or normal behaviour of the target robot.
 
-The full documentation is available on [ReadTheDocs](https://ros2_fuzzer.readthedocs.com)
+The full documentation is available on [ReadTheDocs](https://ros2-fuzzer.readthedocs.com)
 
 ROS2_fuzzer is an effort part of the RedROS2-I FTP funded by [ROSIN](http://rosin-project.eu/) (European Union’s Horizon 2020 research and innovation programme) with the grant agreement No 732287.
 
