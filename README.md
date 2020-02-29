@@ -1,5 +1,9 @@
 # ROS2 Topic & Service Fuzzer
 
+<a href="http://www.aliasrobotics.com"><img src="https://aliasrobotics.com/img/git_alias_logo.png" align="left" hspace="8" vspace="2" width="200"></a>
+
+</br>
+
 This repository contains Alias Robotics's ROS2 topic & service fuzzer.
 
 [![PyPI version](https://badge.fury.io/py/ros2-fuzzer.svg)](https://badge.fury.io/py/ros2-fuzzer)   
