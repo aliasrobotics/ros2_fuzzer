@@ -1,3 +1,5 @@
+> This repository has been archived and is not maintained any further. Refer to [alurity](https://aliasrobotics.com/alurity.php) for future progress on robot fuzz testing.
+
 # ROS2 Topic & Service Fuzzer
 
 <a href="http://www.aliasrobotics.com"><img src="https://aliasrobotics.com/img/git_alias_logo.png" align="left" hspace="8" vspace="2" width="200"></a>
